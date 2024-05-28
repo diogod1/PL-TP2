@@ -2,12 +2,8 @@
 from  fca_lexer import FCALexer
 
 exemplos = [ # exemplos a avaliar de forma independente... 
-            "ESCREVER(valor);",
-			"ESCREVER(365 * 2); ",
-			"ESCREVER(\"Ola Mundo\"); ",
-			"curso = \"ESI\";",
-			"ESCREVER(\"Olá, \" <> curso);",
-			"FUNCAO soma(a,b): a+b ;"]
+            "ESCREVER(2+2+2); --GANDA REGEX COZINHADO NA HORA",
+			"ESCREVER(2+2+2); {-e QUE FILHO\nGandas mamas-}"]
 
 for frase in exemplos:
 	print(f"----------------------")

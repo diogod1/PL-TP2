@@ -6,7 +6,7 @@ class FCALexer:
         # Novas adições
         'ESCREVER', 'COMENTARIOS', "CONCAT", "FUNCAO", "FIM", "MAP", "FOLD"
     )
-    literals = ['+', '*', '-', '(', ')', '=', ';', ',',':']
+    literals = ['+', '*', '-', '(', ')', '=', ';', ',',':','}','{']
 
     # t_PLUS = r'\+'
     # t_TIMES = r'\*'
@@ -30,7 +30,11 @@ class FCALexer:
         return t
     
     def t_COMENTARIOS(self, t):
-        r'--.*|{-.*\n*-}'
+        r'--.*|{-(.|\n)*-}'
+        if t.value.startswith("--"):
+            t.value = t.value[2:]
+        else:
+            t.value = t.value[2:-2]
         return t
     
     def t_CONCAT(self, t):

@@ -1,4 +1,5 @@
 from fca_lexer import FCALexer
+import re
 import ply.yacc as pyacc
  
 class ArithGrammar:
@@ -42,7 +43,8 @@ class ArithGrammar:
     # Declarações gerais dentro do programa
     def p_declaracao(self, p):
         """declaracao : declaracao_atribuicao
-                      | declaracao_escrever"""
+                      | declaracao_escrever
+                      | declaracao_comentario"""
         p[0] = p[1]
  
     #| declaracao_expressao 
@@ -52,36 +54,46 @@ class ArithGrammar:
 
     # Declaração com atribuição
     def p_declaracao_atribuicao(self, p):
-        """declaracao_atribuicao : ID '=' lista_expressoes ';'"""
+        """declaracao_atribuicao : ID '=' expressao ';'"""
         p[0] = {'op': 'atribuicao', 'args': [p[1], p[3]]}
     
     def p_declaracao_escrever(self,p):
-        """declaracao_escrever : ESCREVER '(' expressao ')' ';'
-                               | ESCREVER '(' lista_expressoes ')' ';' """
+        """declaracao_escrever : ESCREVER '(' expressao ')' ';'"""
         p[0] = {'op': 'escrever', 'args': [p[3]]}
 
+    def p_declaracao_comentario(self,p):
+        """declaracao_comentario : COMENTARIOS"""
+        p[0] = {'op': 'comentario', 'args': [p[1]]}
+
+    def p_expressao_number(self, p):
+        """expressao : NUMBER"""
+        p[0] = {'op': 'number', 'args': p[1]}
+
+    def p_expressao_id(self,p):
+        """expressao : ID """
+        p[0] = {'op': 'id', 'args': p[1]}
+
+    def p_expressao_string(self,p):
+        """expressao : STRING """
+        resultado = re.findall(r"\#{(.*?)}", p[1])
+        if resultado is any:
+            p[0] = {'op': 'string', 'args': p[1]}
+        else:
+            for substring in resultado:
+                p[0] = {'op': 'string', 'args': p[1]}
+
+    def p_expressao_concat(self,p):
+        """expressao : expressao CONCAT expressao"""
+        p[0] = {'op': 'concat', 'args': [p[1],p[3]]}
+
+    def p_expressao(self,p):
+        """expressao : expressao '+' expressao
+                     | expressao '-' expressao
+                     | expressao '/' expressao
+                     | expressao '*' expressao"""
+        p[0] = {'op': p[2], 'args': [p[1], p[3]]}
+    
     # def p_declaracao_funcao(self, p):
     #     """declaracao_funcao: FUNCAO ID'('lista_atribuicao')' = lista_expressoes ';'"""
 
     #def p_lista_atribuicao(self, p):
-
-    def p_expressao(self, p):
-        """expressao : NUMBER"""
-        p[0] = {'op': 'expressao_number', 'args': p[1]}
-
-    def p_expressao_id(self,p):
-        """expressao : ID """
-        p[0] = {'op': 'expressao_id', 'args': p[1]}
-
-    def p_expressao_string(self,p):
-        """expressao : STRING """
-        p[0] = {'op': 'expressao_string', 'args': p[1]}
-
-    def p_lista_expressoes(self,p):
-        """lista_expressoes : expressao '+' expressao
-                            | expressao '-' expressao
-                            | expressao '/' expressao
-                            | expressao '*' expressao
-                            | expressao CONCAT expressao
-                            | lista_expressoes CONCAT expressao"""
-        p[0] = {'op': p[2], 'args': [p[1], p[3]]}
