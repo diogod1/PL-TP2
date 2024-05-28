@@ -66,8 +66,3 @@ class FCAParser:
 
     def parse(self, data):
         return self.parser.parse(data, lexer=self.lexer.lexer)
-
-if __name__ == '__main__':
-    parser = FCAParser()
-    result = parser.parse('ESCREVER(valor); ESCREVER(365 * 2); ESCREVER("Ola Mundo"); curso = "ESI"; ESCREVER("Olá, " + curso);')
-    print("AST:", result)

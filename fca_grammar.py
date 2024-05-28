@@ -6,7 +6,7 @@ class ArithGrammar:
     precedence = (
         ('left', '+', '-'),  # Operadores de adição e subtração com associatividade à esquerda
         ('left', '*', '/'),  # Operadores de multiplicação e divisão com associatividade à esquerda
-        ('right', 'UMINUS', 'UNARY_NEG'),  # Operadores unários como '-' (negativo) e 'NEG' têm associatividade à direita
+        # ('right', 'UMINUS'),  # Operadores unários como '-' (negativo) e 'NEG' têm associatividade à direita
     )
  
     # Constructor
@@ -42,20 +42,46 @@ class ArithGrammar:
     # Declarações gerais dentro do programa
     def p_declaracao(self, p):
         """declaracao : declaracao_atribuicao
-                      | declaracao_expressao
-                      | declaracao_funcao
-                      | declaracao_se
-                      | declaracao_escrever
-                      | declaracao_comentario"""
+                      | declaracao_escrever"""
         p[0] = p[1]
  
+    #| declaracao_expressao 
+    #| declaracao_funcao
+    # | declaracao_se
+    # | declaracao_comentario
+
     # Declaração com atribuição
     def p_declaracao_atribuicao(self, p):
-        """declaracao_atribuicao : VAR_ID '=' lista_expressoes ';'"""
+        """declaracao_atribuicao : ID '=' lista_expressoes ';'"""
         p[0] = {'op': 'atribuicao', 'args': [p[1], p[3]]}
     
     def p_declaracao_escrever(self,p):
-        """declaracao_escrever : """
+        """declaracao_escrever : ESCREVER '(' expressao ')' ';'
+                               | ESCREVER '(' lista_expressoes ')' ';' """
+        p[0] = {'op': 'escrever', 'args': [p[3]]}
 
-    def p_declaracao_funcao(self, p):
-        """declaracao_funcao: FUNCAO VAR_ID'('lista_atribuicao')' """
+    # def p_declaracao_funcao(self, p):
+    #     """declaracao_funcao: FUNCAO ID'('lista_atribuicao')' = lista_expressoes ';'"""
+
+    #def p_lista_atribuicao(self, p):
+
+    def p_expressao(self, p):
+        """expressao : NUMBER"""
+        p[0] = {'op': 'expressao_number', 'args': p[1]}
+
+    def p_expressao_id(self,p):
+        """expressao : ID """
+        p[0] = {'op': 'expressao_id', 'args': p[1]}
+
+    def p_expressao_string(self,p):
+        """expressao : STRING """
+        p[0] = {'op': 'expressao_string', 'args': p[1]}
+
+    def p_lista_expressoes(self,p):
+        """lista_expressoes : expressao '+' expressao
+                            | expressao '-' expressao
+                            | expressao '/' expressao
+                            | expressao '*' expressao
+                            | expressao CONCAT expressao
+                            | lista_expressoes CONCAT expressao"""
+        p[0] = {'op': p[2], 'args': [p[1], p[3]]}
