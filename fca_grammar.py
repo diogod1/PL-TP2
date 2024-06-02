@@ -47,11 +47,23 @@ class ArithGrammar:
                       | declaracao_funcao
                       | declaracao_comentario"""
         p[0] = p[1]
- 
-    #| declaracao_expressao 
-    #| declaracao_funcao
-    # | declaracao_se
-    # | declaracao_comentario
+    
+    # Declarações gerais dentro das funcoes
+    def p_declaracao_corpo_funcao(self, p):
+        """declaracao_corpo_funcao : declaracao_atribuicao
+                                   | declaracao_escrever
+                                   | declaracao_comentario"""
+        p[0] = p[1]
+
+    # Lista de declarações, que pode ser uma única declaração ou várias declarações
+    def p_lista_declaracoes_corpo_funcao(self, p):
+        """lista_declaracoes_corpo_funcao : declaracao_corpo_funcao
+                                          | lista_declaracoes_corpo_funcao declaracao_corpo_funcao"""
+        if len(p) == 2:
+            p[0] = {'op': 'seq', 'args': [p[1]]}  # uma única declaração
+        else:
+            p[1]['args'].append(p[2])  # Adiciona a declaração à lista existente
+            p[0] = p[1]    
 
     # Declaração com atribuição
     def p_declaracao_atribuicao(self, p):
@@ -67,7 +79,8 @@ class ArithGrammar:
         p[0] = {'op': 'comentario', 'args': [p[1]]}
         
     def p_declaracao_funcao(self, p):
-        """declaracao_funcao : FUNCAO ID '(' expressao_funcao ')' ':' expressao ';' """
+        """declaracao_funcao : FUNCAO ID '(' expressao_funcao ')' ':' expressao ';'
+                             | FUNCAO ID '(' expressao_funcao ')' ':' lista_declaracoes_corpo_funcao FIM """
         p[0] = {'op': 'funcao', 'args': [p[2],p[4],p[7]]}
             
     def p_expressao_number(self, p):
@@ -78,14 +91,31 @@ class ArithGrammar:
         """expressao : ID """
         p[0] = {'op': 'id', 'args': p[1]}
 
-    def p_expressao_string(self,p):
+    def p_expressao_string(self, p):
         """expressao : STRING """
-        resultado = re.findall(r"\#{(.*?)}", p[1])
-        if resultado is any:
+        resultado = re.findall(r"\#\{(.*?)\}", p[1])
+        if len(resultado) == 0:
             p[0] = {'op': 'string', 'args': p[1]}
         else:
-            for substring in resultado:
-                p[0] = {'op': 'string', 'args': p[1]}
+            p[0] = {'op': 'string_interpol', 'args': p[1]}
+            #Limpar o valor
+            p[0]['args'] = []
+
+            last_pos = 0
+            #loop aos resultados
+            for match in resultado:
+                start_index = p[1].find('#{' + match + '}', last_pos)
+                if start_index > last_pos:
+                    #Adiciona a string antes da variavel
+                    p[0]['args'].append({'op': 'string', 'args': p[1][last_pos:start_index]})
+                #Adiciona a variavel
+                p[0]['args'].append({'op': 'id', 'args': match})
+                #Atualizar a posição
+                last_pos = start_index + len(match) + 3  
+
+            if last_pos < len(p[1]):
+                # Adicionar o resto da string
+                p[0]['args'].append({'op': 'string', 'args': p[1][last_pos:]})
 
     def p_expressao_concat(self,p):
         """expressao : expressao CONCAT expressao"""
@@ -95,9 +125,17 @@ class ArithGrammar:
         """expressao : expressao '+' expressao
                      | expressao '-' expressao
                      | expressao '/' expressao
-                     | expressao '*' expressao"""
+                     | expressao '*' expressao """
         p[0] = {'op': p[2], 'args': [p[1], p[3]]}
     
+    def p_expressao_aleatorio(self,p):
+        """expressao : ALEATORIO '(' NUMBER ')'"""
+        p[0] = {'op': 'aleatorio', 'args': [p[3]]} 
+
+    def p_expressao_entrada(self,p):
+        """expressao : ENTRADA '(' ')'"""
+        p[0] = {'op': 'entrada', 'args': []}
+
     def p_expressao_funcao(self, p):
         """expressao_funcao : expressao
                             | expressao_funcao ',' expressao"""
@@ -106,7 +144,6 @@ class ArithGrammar:
         else:
             p[1]['args'].append(p[3])
             p[0] = p[1]
-    
     
     # def p_declaracao_funcao(self, p):
     #     """declaracao_funcao: FUNCAO ID'('lista_atribuicao')' = lista_expressoes ';'"""

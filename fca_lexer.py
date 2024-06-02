@@ -4,7 +4,7 @@ class FCALexer:
     tokens = (
         'ID', 'NUMBER', 'STRING', 'PLUS', 'TIMES', 'MINUS', 'LPAREN', 'RPAREN', 'EQUALS', 'SEMICOLON', 
         # Novas adições
-        'ESCREVER', 'COMENTARIOS', "CONCAT", "FUNCAO", "FIM", "MAP", "FOLD"
+        'ESCREVER', 'COMENTARIOS', "CONCAT", "FUNCAO", "FIM", "MAP", "FOLD", "ENTRADA", "ALEATORIO"
     )
     literals = ['+', '*', '-', '(', ')', '=', ';', ',',':','}','{']
 
@@ -49,6 +49,14 @@ class FCALexer:
         r'FIM'
         return t
     
+    def t_ENTRADA(self,t):
+        r'ENTRADA'
+        return t
+    
+    def t_ALEATORIO(self,t):
+        r'ALEATORIO'
+        return t
+
     def t_MAP(self, t):
         r'[Mm]ap'
         return t
