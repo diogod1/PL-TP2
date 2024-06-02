@@ -52,7 +52,8 @@ class ArithGrammar:
     def p_declaracao_corpo_funcao(self, p):
         """declaracao_corpo_funcao : declaracao_atribuicao
                                    | declaracao_escrever
-                                   | declaracao_comentario"""
+                                   | declaracao_comentario
+                                   | expressao ';'"""
         p[0] = p[1]
 
     # Lista de declarações, que pode ser uma única declaração ou várias declarações
