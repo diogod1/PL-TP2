@@ -21,6 +21,9 @@ class ArithEval:
 		"concat" : lambda args: f'{args[0]}{args[1]}',
 		"entrada": lambda args: input(),
   		"aleatorio": lambda args: random.randint(0,args[0]),
+		"expressao_funcao": lambda args: args,
+		"expressao_array": lambda args: args,
+		"array": lambda args: ArithEval._array(args),
 	}
 
 	@staticmethod
@@ -39,6 +42,13 @@ class ArithEval:
    
 		return str
     
+	@staticmethod
+	def _array(args):
+		if len(args) == 0:
+			return []
+		else:
+			return args[0]
+  
 	@staticmethod
 	def evaluate(ast):
 		if type(ast) is int:  # constant value, eg in (int, str)

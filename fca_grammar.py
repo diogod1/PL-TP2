@@ -136,17 +136,21 @@ class ArithGrammar:
                      | expressao '*' expressao """
         p[0] = {'op': p[2], 'args': [p[1], p[3]]}
     
-    def p_expressao_arary(self,p):
-        """expressao : '[' lista_expressao_array ']' """
-        p[0] = {'op': 'array', 'args': [p[2]]}
+    def p_expressao_array(self,p):
+        """expressao : '[' lista_expressao_array ']'
+                     | '[' ']' """
+        if len(p) == 3:
+            p[0] = {'op': 'array', 'args': []} 
+        else:
+            p[0] = {'op': 'array', 'args': [p[2]]}
         
     def p_map_array(self,p):
-        """ expressao : map '(' ID ',' expressao ')' """
-        p[0] = {'op': 'map', 'args': [p[2]]}
+        """ expressao : MAP '(' ID ',' expressao ')' """
+        p[0] = {'op': 'map', 'args': [p[3],p[5]]}
         
     def p_fold_array(self,p):
-        """ expressao : fold '(' ID ',' expressao ')' """
-        p[0] = {'op': 'array', 'args': [p[2]]}    
+        """ expressao : FOLD '(' ID ',' expressao ')' """
+        p[0] = {'op': 'array', 'args': [p[3],p[5]]}    
         
     # Lista de declarações, que pode ser uma única declaração ou várias declarações
     def p_lista_expressao_array(self, p):
