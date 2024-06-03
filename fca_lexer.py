@@ -58,11 +58,11 @@ class FCALexer:
         return t
 
     def t_MAP(self, t):
-        r'[Mm]ap'
+        r'[Mm][aA][pP]'
         return t
     
     def t_FOLD(self, t):
-        r'[Ff]OLD'
+        r'[Ff][oO][lL][dD]'
         return t
     #---------------------------------------------------
 

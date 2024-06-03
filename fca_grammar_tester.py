@@ -44,6 +44,7 @@ exemplos = [ # exemplos a avaliar de forma independente...
             # "lista = [ 1, 2, 3 ] ;\nESCREVER( lista ); -- [1,2,3];\nvazia = [] ;\nlista_str = [\"teste\"]",
             # "FUNCAO mais2( x ),: x + 2 ;\nFUNCAO soma( a, b ),: a + b ;\nlista1 = map( mais2, [] );\nlista2 = map( mais2, [ 1, 2, 3 ] );\nlista3 = fold( soma, [ 1, 2, 3 ], 0 );",
             "array = map(soma2,[1, 2, 3]);",
+            "lista3 = fold( soma, [1, 2, 3], 0 );"
             # "FUNCAO somatorio( [] ),: 0 ;FUNCAO somatorio( x:xs[] ),: x + somatorio(xs) ;",
             ]
 outputs = {}

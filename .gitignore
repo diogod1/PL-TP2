@@ -4,3 +4,4 @@ parsetab.py
 output.json
 *.c
 .vscode
+.idea

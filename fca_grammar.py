@@ -149,8 +149,8 @@ class ArithGrammar:
         p[0] = {'op': 'map', 'args': [p[3],p[5]]}
         
     def p_fold_array(self,p):
-        """ expressao : FOLD '(' ID ',' expressao ')' """
-        p[0] = {'op': 'array', 'args': [p[3],p[5]]}    
+        """ expressao : FOLD '(' ID ',' expressao ',' NUMBER ')' """
+        p[0] = {'op': 'array', 'args': [p[3],p[5],p[7]]}
         
     # Lista de declarações, que pode ser uma única declaração ou várias declarações
     def p_lista_expressao_array(self, p):
@@ -199,8 +199,3 @@ class ArithGrammar:
         else:
             print("Syntax error: unexpected end of file")
         exit(1)
-  
-    # def p_declaracao_funcao(self, p):
-    #     """declaracao_funcao: FUNCAO ID'('lista_atribuicao')' = lista_expressoes ';'"""
-
-    #def p_lista_atribuicao(self, p):
