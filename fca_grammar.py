@@ -80,25 +80,32 @@ class ArithGrammar:
         p[0] = {'op': 'comentario', 'args': [p[1]]}
         
     def p_declaracao_funcao(self, p):
-        """declaracao_funcao : FUNCAO ID '(' expressao_funcao ')' ':' expressao ';'
+        """declaracao_funcao : FUNCAO ID '(' expressao_funcao ')' ',' ':' expressao ';'
                              | FUNCAO ID '(' expressao_funcao ')' ':' lista_declaracoes_corpo_funcao FIM """
-        p[0] = {'op': 'funcao', 'args': [p[2],p[4],p[7]]}
+        if len(p) == 10:
+            p[0] = {'op': 'funcao', 'args': [p[2],p[4],p[8]]}  # uma única declaração
+        else:
+            p[0] = {'op': 'funcao', 'args': [p[2],p[4],p[7]]}
             
     def p_expressao_number(self, p):
         """expressao : NUMBER"""
-        p[0] = {'op': 'number', 'args': p[1]}
+        p[0] = {'op': 'number', 'args': [p[1]]}
 
     def p_expressao_id(self,p):
         """expressao : ID """
-        p[0] = {'op': 'id', 'args': p[1]}
+        p[0] = {'var': p[1]}
+        
+    def p_expressao_parentises(self,p):
+        """expressao : '(' expressao ')' """
+        p[0] = p[2]
 
     def p_expressao_string(self, p):
         """expressao : STRING """
         resultado = re.findall(r"\#\{(.*?)\}", p[1])
         if len(resultado) == 0:
-            p[0] = {'op': 'string', 'args': p[1]}
+            p[0] = {'op': 'string', 'args': [p[1]]}
         else:
-            p[0] = {'op': 'string_interpol', 'args': p[1]}
+            p[0] = {'op': 'string_interpol', 'args': [p[1]]}
             #Limpar o valor
             p[0]['args'] = []
 
@@ -108,15 +115,15 @@ class ArithGrammar:
                 start_index = p[1].find('#{' + match + '}', last_pos)
                 if start_index > last_pos:
                     #Adiciona a string antes da variavel
-                    p[0]['args'].append({'op': 'string', 'args': p[1][last_pos:start_index]})
+                    p[0]['args'].append({'op': 'string', 'args': [p[1][last_pos:start_index]]})
                 #Adiciona a variavel
-                p[0]['args'].append({'op': 'id', 'args': match})
+                p[0]['args'].append({'var': match})
                 #Atualizar a posição
                 last_pos = start_index + len(match) + 3  
 
             if last_pos < len(p[1]):
                 # Adicionar o resto da string
-                p[0]['args'].append({'op': 'string', 'args': p[1][last_pos:]})
+                p[0]['args'].append({'op': 'string', 'args': [p[1][last_pos:]]})
 
     def p_expressao_concat(self,p):
         """expressao : expressao CONCAT expressao"""
@@ -129,6 +136,29 @@ class ArithGrammar:
                      | expressao '*' expressao """
         p[0] = {'op': p[2], 'args': [p[1], p[3]]}
     
+    def p_expressao_arary(self,p):
+        """expressao : '[' lista_expressao_array ']' """
+        p[0] = {'op': 'array', 'args': [p[2]]}
+        
+    def p_map_array(self,p):
+        """ expressao : map '(' ID ',' expressao ')' """
+        p[0] = {'op': 'map', 'args': [p[2]]}
+        
+    def p_fold_array(self,p):
+        """ expressao : fold '(' ID ',' expressao ')' """
+        p[0] = {'op': 'array', 'args': [p[2]]}    
+        
+    # Lista de declarações, que pode ser uma única declaração ou várias declarações
+    def p_lista_expressao_array(self, p):
+        """lista_expressao_array : expressao
+                                 | lista_expressao_array ',' expressao"""
+        if len(p) == 2:
+            p[0] = {'op': 'expressao_array', 'args': [p[1]]}  # uma única declaração
+        else:
+            p[1]['args'].append(p[3])  # Adiciona a declaração à lista existente
+            p[0] = p[1]    
+
+    
     def p_expressao_aleatorio(self,p):
         """expressao : ALEATORIO '(' NUMBER ')'"""
         p[0] = {'op': 'aleatorio', 'args': [p[3]]} 
@@ -138,14 +168,34 @@ class ArithGrammar:
         p[0] = {'op': 'entrada', 'args': []}
 
     def p_expressao_funcao(self, p):
-        """expressao_funcao : expressao
-                            | expressao_funcao ',' expressao"""
+        """expressao_funcao : expressao_parametro
+                            | expressao_funcao ',' expressao_parametro"""
         if len(p) == 2:
             p[0] = {'op': 'expressao_funcao', 'args': [p[1]]}
         else:
             p[1]['args'].append(p[3])
             p[0] = p[1]
+            
+    def p_expressao_parametro_id(self,p):
+        """expressao_parametro : ID"""
+        p[0] = {'op': 'parametro_id', 'args': [p[1]]} 
     
+    def p_expressao_parametro_number(self,p):
+        """expressao_parametro : NUMBER"""
+        p[0] = {'op': 'parametro_number', 'args': [p[1]]} 
+    
+    def p_chama_funcao(self, p):
+        """ expressao : ID '(' expressao_funcao ')'"""
+        p[0] = {'op': 'chama_funcao', 'args': [p[1],p[3]]}
+        
+    # Fim da especificação da gramática 		
+    def p_error(self, p):
+        if p:
+            print(f"Syntax error: unexpected '{p.type}'")
+        else:
+            print("Syntax error: unexpected end of file")
+        exit(1)
+  
     # def p_declaracao_funcao(self, p):
     #     """declaracao_funcao: FUNCAO ID'('lista_atribuicao')' = lista_expressoes ';'"""
 

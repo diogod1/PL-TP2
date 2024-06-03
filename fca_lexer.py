@@ -6,7 +6,7 @@ class FCALexer:
         # Novas adições
         'ESCREVER', 'COMENTARIOS', "CONCAT", "FUNCAO", "FIM", "MAP", "FOLD", "ENTRADA", "ALEATORIO"
     )
-    literals = ['+', '*', '-', '(', ')', '=', ';', ',',':','}','{']
+    literals = ['+', '*', '-', '(', ')', '=', ';', ',',':','}','{','[',']']
 
     # t_PLUS = r'\+'
     # t_TIMES = r'\*'
@@ -17,7 +17,7 @@ class FCALexer:
     # t_SEMICOLON = r';'
     # Remover
 
-    t_ignore = ' \n'
+    t_ignore = ' \t\n'
 
     def t_STRING(self, t):
         r'\"([^\\\n]|(\\.))*?\"'
