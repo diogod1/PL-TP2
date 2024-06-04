@@ -27,8 +27,10 @@ exemplos = [ # exemplos a avaliar de forma independente...
             # 'ESCREVER(2+2+2); --GANDA REGEX COZINHADO NA HORA',
 			# 'ESCREVER(2+2+2); {-e QUE FILHO\nGandas mamas-}',
             # 'ESCREVER("soma de " <> 9 <> "com " <> 3*4 <> "=" <> 9+2*3);',
-            # 'FUNCAO teste(a): a+b;',
-            # 'FUNCAO teste(a,b,12),: a+b;',
+            # 'FUNCAO teste(a,b),: a+b;',
+             'FUNCAO teste(a,b,12),: a+b;',
+            'a = soma(n-1);'
+            'lista2 = map( mais2, [ 1, 2, 3 ] );'
             # 'ESCREVER ("Ola, #{escola} #{inst}!");',
             # 'ESCREVER ("#{escola} #{inst}!");',
             # 'var_rest = ENTRADA() ;',
@@ -43,8 +45,8 @@ exemplos = [ # exemplos a avaliar de forma independente...
             # "FUNCAO fib( 0 ),: 0 ;\nFUNCAO fib( 1 ),: 0 ;\nFUNCAO fib( n ):\na = fib(n-1);\nb = fib(n-2);\na + b;\nFIM\nfib5 = fib(5);",
             # "lista = [ 1, 2, 3 ] ;\nESCREVER( lista ); -- [1,2,3];\nvazia = [] ;\nlista_str = [\"teste\"]",
             # "FUNCAO mais2( x ),: x + 2 ;\nFUNCAO soma( a, b ),: a + b ;\nlista1 = map( mais2, [] );\nlista2 = map( mais2, [ 1, 2, 3 ] );\nlista3 = fold( soma, [ 1, 2, 3 ], 0 );",
-            "array = map(soma2,[1, 2, 3]);",
-            "lista3 = fold( soma, [1, 2, 3], 0 );"
+            # "array = map(soma2,[1, 2, 3]);",
+            # "lista3 = fold( soma, [1, 2, 3], 0 );"
             # "FUNCAO somatorio( [] ),: 0 ;FUNCAO somatorio( x:xs[] ),: x + somatorio(xs) ;",
             ]
 outputs = {}

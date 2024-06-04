@@ -3,7 +3,8 @@ import random
 
 class ArithEval:
 
-	symbols = [{}]
+	symbols = {}
+	funcoes = {}
 
 	operators = {
 		"+": lambda args: args[0] + args[1],
@@ -13,9 +14,8 @@ class ArithEval:
 		"atribuicao": lambda args: ArithEval._attrib(args),
 		"escrever": lambda args: print(args[0]),
 		"number": lambda args: args[0],
-		# "parametro_id": lambda args: ArithEval._funcao_params(args),
-		# "parametro_number": lambda args: args,
-		"funcao": lambda args: ArithEval._define_funcao(args),
+		"parametro_id": lambda args: args[0],
+		"parametro_number": lambda args: args[0],
 		"string": lambda args: args[0],
 		"string_interpol": lambda args: ArithEval._interpol(args),
 		"comentario": lambda args: None,
@@ -25,6 +25,9 @@ class ArithEval:
 		"expressao_funcao": lambda args: args,
 		"expressao_array": lambda args: args,
 		"array": lambda args: ArithEval._array(args),
+		"map": lambda args: ArithEval._map_array(args),
+		"fold": lambda args: ArithEval._fold_array(args),
+		"chama_funcao": lambda args: ArithEval._chama_funcao(args),
 	}
 
 	@staticmethod
@@ -49,8 +52,80 @@ class ArithEval:
 			return args[0]
 
 	@staticmethod
-	def _define_funcao(args):
-		return None
+	def _map_array(args):
+		func = args[0]
+		array = args[1]
+		result = []
+		# Fazer loop aos elementos
+		for element in array:
+			func_result = ArithEval._chama_funcao([func, [element]])
+			result.append(func_result)
+
+		return result
+
+	@staticmethod
+	def _fold_array(args):
+		func = args[0]
+		array = args[1]
+		number = args[2]
+		array.append(number)
+		is_first = True
+		for element in reversed(array):
+			if is_first:
+				func_result = ArithEval._chama_funcao([func, [element, number]])
+				is_first = False
+			func_result = ArithEval._chama_funcao([func, [element, func_result]])
+
+		print(f'result_fold: {func_result}')
+		return func_result
+
+	@staticmethod
+	def _funcao(args):
+		nome = args[0]
+		parametro = args[1]
+		conteudo = args[2]
+
+		if nome not in ArithEval.funcoes:
+			ArithEval.funcoes[nome] = []
+
+		ArithEval.funcoes[nome].append({'parametro': parametro, 'conteudo': conteudo})
+
+		return nome
+
+	@staticmethod
+	def _chama_funcao(args):
+		funcao = args[0]
+		parametros = args[1]
+
+		if funcao not in ArithEval.funcoes:
+			raise Exception(f"error: function '{funcao}' not assigned")
+
+		param_valido = False
+
+		temp_scope = ArithEval.symbols.copy()
+
+		funcao_scope = ArithEval.symbols.copy()
+
+		#Funcoes com multiplos nomes e parametros
+		for funcao_item in ArithEval.funcoes[funcao]:
+			if len(parametros) != len(funcao_item['parametro']):
+				continue
+
+			for parametro, valor in zip(funcao_item['parametro'], parametros):
+				# print(f'parametro: {parametro} , valor: {valor} \n')
+				if 'var' in parametro:
+					funcao_scope[parametro['var']] = ArithEval.evaluate(valor)
+
+			#if param_valido == False:
+			#	raise Exception(f"error: no function {funcao} incorrect parameters")
+
+			ArithEval.symbols = funcao_scope
+
+			result = ArithEval.evaluate(funcao_item['conteudo'])
+
+			ArithEval.symbols = temp_scope
+
+			return result
 
 	@staticmethod
 	def evaluate(ast):
@@ -60,10 +135,18 @@ class ArithEval:
 			return ArithEval._eval_operator(ast)
 		if type(ast) is str: 
 			return ast
+		if type(ast) is list:
+			result = []
+			for item in ast:
+				result.append(ArithEval._eval_operator(item))
+			return result
 		raise Exception(f"Unknown AST type {ast}")
 
 	@staticmethod
 	def _eval_operator(ast):
+		if 'op' in ast and ast['op'] == 'funcao':
+			return ArithEval._funcao(ast['args'])
+
 		if 'op' in ast:
 			op = ast["op"]
 			args = [ArithEval.evaluate(a) for a in ast['args']]

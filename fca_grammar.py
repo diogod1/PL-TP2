@@ -150,7 +150,7 @@ class ArithGrammar:
         
     def p_fold_array(self,p):
         """ expressao : FOLD '(' ID ',' expressao ',' NUMBER ')' """
-        p[0] = {'op': 'array', 'args': [p[3],p[5],p[7]]}
+        p[0] = {'op': 'fold', 'args': [p[3],p[5],p[7]]}
         
     # Lista de declarações, que pode ser uma única declaração ou várias declarações
     def p_lista_expressao_array(self, p):
@@ -175,18 +175,14 @@ class ArithGrammar:
         """expressao_funcao : expressao_parametro
                             | expressao_funcao ',' expressao_parametro"""
         if len(p) == 2:
-            p[0] = {'op': 'expressao_funcao', 'args': [p[1]]}
+            p[0] = [p[1]]
         else:
-            p[1]['args'].append(p[3])
+            p[1].append(p[3])
             p[0] = p[1]
             
     def p_expressao_parametro_id(self,p):
-        """expressao_parametro : ID"""
-        p[0] = {'op': 'parametro_id', 'args': [p[1]]} 
-    
-    def p_expressao_parametro_number(self,p):
-        """expressao_parametro : NUMBER"""
-        p[0] = {'op': 'parametro_number', 'args': [p[1]]} 
+        """expressao_parametro : expressao"""
+        p[0] = p[1]
     
     def p_chama_funcao(self, p):
         """ expressao : ID '(' expressao_funcao ')'"""
