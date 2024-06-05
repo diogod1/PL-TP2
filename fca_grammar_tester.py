@@ -29,8 +29,9 @@ exemplos = [ # exemplos a avaliar de forma independente...
             # 'ESCREVER("soma de " <> 9 <> "com " <> 3*4 <> "=" <> 9+2*3);',
             # 'FUNCAO teste(a,b),: a+b;',
              'FUNCAO teste(a,b,12),: a+b;',
-            'a = soma(n-1);'
-            'lista2 = map( mais2, [ 1, 2, 3 ] );'
+            # 'a = soma(n-1);'
+            # 'lista2 = map( mais2, [ 1, 2, 3 ] );'
+            'FUNCAO somatorio( x:xs ),: x + somatorio(xs) ;"'
             # 'ESCREVER ("Ola, #{escola} #{inst}!");',
             # 'ESCREVER ("#{escola} #{inst}!");',
             # 'var_rest = ENTRADA() ;',

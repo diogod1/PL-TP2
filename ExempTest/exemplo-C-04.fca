@@ -6,4 +6,4 @@ FUNCAO fib( n ):
 	b = fib(n-2);
 	a + b;
 FIM
-fib5 = fib(7);
+fib5 = fib(6);

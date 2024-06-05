@@ -140,7 +140,7 @@ class ArithGrammar:
         """expressao : '[' lista_expressao_array ']'
                      | '[' ']' """
         if len(p) == 3:
-            p[0] = {'op': 'array', 'args': []} 
+            p[0] = {'op': 'array', 'args': []}
         else:
             p[0] = {'op': 'array', 'args': [p[2]]}
         
@@ -162,7 +162,6 @@ class ArithGrammar:
             p[1]['args'].append(p[3])  # Adiciona a declaração à lista existente
             p[0] = p[1]    
 
-    
     def p_expressao_aleatorio(self,p):
         """expressao : ALEATORIO '(' NUMBER ')'"""
         p[0] = {'op': 'aleatorio', 'args': [p[3]]} 
@@ -183,7 +182,11 @@ class ArithGrammar:
     def p_expressao_parametro_id(self,p):
         """expressao_parametro : expressao"""
         p[0] = p[1]
-    
+
+    def p_expressao_array_div(self,p):
+        """expressao_parametro : ID ':' ID"""
+        p[0] = {'op': 'var_array', 'args': [p[1],p[3]]}
+
     def p_chama_funcao(self, p):
         """ expressao : ID '(' expressao_funcao ')'"""
         p[0] = {'op': 'chama_funcao', 'args': [p[1],p[3]]}

@@ -28,6 +28,8 @@ class ArithEval:
 		"map": lambda args: ArithEval._map_array(args),
 		"fold": lambda args: ArithEval._fold_array(args),
 		"chama_funcao": lambda args: ArithEval._chama_funcao(args),
+		"var_array": lambda args: args[0],
+		# "array_vazio": lambda args: [],
 	}
 
 	@staticmethod
@@ -76,7 +78,6 @@ class ArithEval:
 				is_first = False
 			func_result = ArithEval._chama_funcao([func, [element, func_result]])
 
-		print(f'result_fold: {func_result}')
 		return func_result
 
 	@staticmethod
@@ -103,7 +104,6 @@ class ArithEval:
 		param_valido = False
 
 		temp_scope = ArithEval.symbols.copy()
-
 		funcao_scope = ArithEval.symbols.copy()
 
 		#Funcoes com multiplos nomes e parametros
@@ -114,25 +114,33 @@ class ArithEval:
 			for_valid = True
 				
 			for parametro, valor in zip(funcao_item['parametro'], parametros):
-				print(f'parametro: {parametro} , valor: {valor} \n')
 				if 'var' in parametro:
 					funcao_scope[parametro['var']] = ArithEval.evaluate(valor)
 				if 'op' in parametro:
-					if 'number' in parametro['op'] and valor not in parametro['args']:
+					if 'number' == parametro['op'] and valor not in parametro['args']:
 						for_valid = False
-						continue
-			
+						break
+					if 'var_array' == parametro['op']:
+						funcao_scope[parametro['args'][0]] = valor[0]
+						funcao_scope[parametro['args'][1]] = valor[1:]
+						for_valid = True
+					if 'array' == parametro['op']:
+						if ArithEval._eval_operator(parametro) != valor:
+							for_valid = False
+							break
+
 			if for_valid == False:
 				continue
+
 			#if param_valido == False:
-			#	raise Exception(f"error: no function {funcao} incorrect parameters")
+			# #	raise Exception(f"error: no function {funcao} incorrect parameters")
 
 			ArithEval.symbols = funcao_scope
-   
+
 			result = ArithEval.evaluate(funcao_item['conteudo'])
-   
+
 			ArithEval.symbols = temp_scope
-   
+
 			return result
 
 	@staticmethod
