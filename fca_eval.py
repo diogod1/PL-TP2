@@ -110,21 +110,29 @@ class ArithEval:
 		for funcao_item in ArithEval.funcoes[funcao]:
 			if len(parametros) != len(funcao_item['parametro']):
 				continue
-
+				
+			for_valid = True
+				
 			for parametro, valor in zip(funcao_item['parametro'], parametros):
-				# print(f'parametro: {parametro} , valor: {valor} \n')
+				print(f'parametro: {parametro} , valor: {valor} \n')
 				if 'var' in parametro:
 					funcao_scope[parametro['var']] = ArithEval.evaluate(valor)
-
+				if 'op' in parametro:
+					if 'number' in parametro['op'] and valor not in parametro['args']:
+						for_valid = False
+						continue
+			
+			if for_valid == False:
+				continue
 			#if param_valido == False:
 			#	raise Exception(f"error: no function {funcao} incorrect parameters")
 
 			ArithEval.symbols = funcao_scope
-
+   
 			result = ArithEval.evaluate(funcao_item['conteudo'])
-
+   
 			ArithEval.symbols = temp_scope
-
+   
 			return result
 
 	@staticmethod
